@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ page.name }}</title>
+    <meta
+      name="description"
+      content="{{ page.intro }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,520;9..144,620&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#work">Skip to work</a>
+    <header class="site-header">
+      <a class="brand" href="#top">{{ page.name }}</a>
+      <nav class="nav" aria-label="Page">
+        <a href="#work">Work</a>
+        <a href="#languages">Languages</a>
+        <a href="#experience">Experience</a>
+        <a href="{{ page.resume_href }}">Resume</a>
+      </nav>
+      <p class="header-links">
+        <a href="{{ page.github_url }}" rel="me">GitHub</a>
+        <a href="{{ page.linkedin_url }}" rel="me">LinkedIn</a>
+      </p>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="kicker">Portfolio</p>
+          <h1>{{ page.name }}</h1>
+          <hr class="rule" />
+          <p class="lede">{{ page.intro }}</p>
+          <p class="contact">
+            <a href="mailto:{{ page.email }}">{{ page.email }}</a>
+          </p>
+        </div>
+        {% if page.role_line %}
+          <aside class="now">
+            <p class="kicker">Now</p>
+            <p class="now-role">{{ page.role_line }}</p>
+            {% if page.place_line %}
+              <p class="now-place">{{ page.place_line }}</p>
+            {% endif %}
+            {% if page.dates_line %}
+              <p class="now-dates">{{ page.dates_line }}</p>
+            {% endif %}
+          </aside>
+        {% endif %}
+      </section>
+
+      <section id="work" class="section">
+        <h2>Selected work</h2>
+        {% for feature in page.features %}
+          <article class="feature{% if feature.links|length == 1 %} feature-solo{% endif %}">
+            <header class="feature-head">
+              <p class="kicker">{{ feature.kicker }}</p>
+              <h3>{{ feature.title }}</h3>
+              <p>{{ feature.summary }}</p>
+            </header>
+            <ul class="cards">
+              {% for link in feature.links %}
+                <li>
+                  <a href="{{ link.href }}">
+                    <span class="card-name">{{ link.name }}</span>
+                    <span class="card-summary">{{ link.summary }}</span>
+                    <span class="stack">{{ link.stack | join(" · ") }}</span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </article>
+        {% endfor %}
+
+        <div class="also">
+          <h3>Other public work</h3>
+          <ul class="also-list">
+            {% for project in page.other_projects %}
+              <li>
+                <a href="{{ project.href }}">
+                  <span class="card-name">{{ project.name }}</span>
+                  <span class="card-summary">{{ project.summary }}</span>
+                  <span class="stack">{{ project.stack | join(" · ") }}</span>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </section>
+
+      <section id="languages" class="section">
+        <h2>Languages</h2>
+        {% if page.languages %}
+          <ul class="pills">
+            {% for language in page.languages %}
+              <li>{{ language }}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p class="quiet">Languages were not listed on the resume.</p>
+        {% endif %}
+      </section>
+
+      <section id="experience" class="section">
+        <h2>Experience</h2>
+        {% if page.resume_error %}
+          <p class="notice">{{ page.resume_error }}</p>
+        {% endif %}
+        {% if page.roles or page.education %}
+          <ol class="timeline">
+            {% for role in page.roles %}
+              <li>
+                <p class="when">{{ role.dates }}</p>
+                <div class="event">
+                  <h3>{{ role.title }}</h3>
+                  <p class="where">
+                    {{ role.company }}{% if role.location %} · {{ role.location }}{% endif %}
+                  </p>
+                  {% if role.bullets %}
+                    <ul>
+                      {% for bullet in role.bullets %}
+                        <li>{{ bullet }}</li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                </div>
+              </li>
+            {% endfor %}
+            {% for item in page.education %}
+              <li class="edu">
+                <p class="when">{{ item.dates }}</p>
+                <div class="event">
+                  <h3>{{ item.credential or item.school }}</h3>
+                  <p class="where">
+                    {% if item.credential and item.location %}
+                      {{ item.school }} · {{ item.location }}
+                    {% elif item.credential %}
+                      {{ item.school }}
+                    {% else %}
+                      {{ item.location }}
+                    {% endif %}
+                  </p>
+                </div>
+              </li>
+            {% endfor %}
+          </ol>
+        {% endif %}
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>{{ page.name }}</p>
+      <p>
+        <a href="mailto:{{ page.email }}">{{ page.email }}</a>
+        <a href="{{ page.github_url }}">GitHub</a>
+        <a href="{{ page.linkedin_url }}">LinkedIn</a>
+        <a href="{{ page.resume_href }}">Resume</a>
+      </p>
+    </footer>
+  </body>
+</html>

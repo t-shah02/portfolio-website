@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "portfolio-site"
+version = "0.1.0"
+description = "Café portfolio site for Tanish Shah."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["jinja2>=3.1"]
+
+[project.scripts]
+portfolio-site = "portfolio_site.http.server:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+portfolio_site = ["templates/*.html"]
