@@ -1,26 +1,32 @@
 FROM python:3.12-slim-bookworm
 
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=never \
     SITE_ROOT=/srv/site \
     RESUME_PATH=/srv/site/assets/resume/Tanish_Shah_Resume.pdf
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends poppler-utils nginx \
+    && apt-get install -y --no-install-recommends poppler-utils nginx ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /etc/nginx/sites-enabled/default
 
 WORKDIR /srv
 
-COPY pyproject.toml README.md ./
+COPY pyproject.toml uv.lock README.md ./
 COPY src ./src
-RUN pip install --no-cache-dir .
+RUN uv sync --frozen --no-dev --no-editable
 
 COPY site ./site
 COPY deploy/nginx.conf /etc/nginx/nginx.conf
 COPY deploy/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+ENV PATH="/srv/.venv/bin:$PATH"
 
 EXPOSE 8080
 

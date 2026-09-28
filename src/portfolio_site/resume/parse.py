@@ -67,8 +67,8 @@ def parse_resume_text(text: str) -> ResumeProfile:
 
     if not role_rows:
         raise ResumeFormatError(
-            "Work Experience was not found. The resume should keep the headings "
-            "Technical Skills, Work Experience, and Education."
+            "The parser found no Work Experience section. Keep the headings "
+            "Technical Skills, Work Experience, and Education in the resume."
         )
 
     roles = tuple(_finish_role(row) for row in _sorted_roles(role_rows))

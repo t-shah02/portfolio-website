@@ -17,3 +17,17 @@ def resume_path(root: Path | None = None) -> Path:
     if configured:
         return Path(configured)
     return (root if root is not None else site_root()) / "assets" / "resume" / "Tanish_Shah_Resume.pdf"
+
+
+def projects_path(root: Path | None = None) -> Path:
+    configured = os.environ.get("PROJECTS_DIR")
+    if configured:
+        return Path(configured)
+    return (root if root is not None else site_root()) / "assets" / "projects"
+
+
+def about_path(root: Path | None = None) -> Path:
+    configured = os.environ.get("ABOUT_PATH")
+    if configured:
+        return Path(configured)
+    return (root if root is not None else site_root()) / "assets" / "about.md"
