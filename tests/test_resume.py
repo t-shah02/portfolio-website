@@ -32,7 +32,7 @@ Education
 """
 
 ROOT = Path(__file__).resolve().parents[1]
-RESUME = ROOT / "site" / "assets" / "resume" / "Tanish_Shah_Resume.pdf"
+RESUME = ROOT / "site" / "assets" / "pdfs" / "Tanish_Shah_Resume.pdf"
 PROJECTS = ROOT / "site" / "assets" / "projects"
 ABOUT = ROOT / "site" / "assets" / "about.md"
 

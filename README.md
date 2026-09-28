@@ -4,7 +4,7 @@ Café-style portfolio for Tanish Shah. Projects live as markdown under `site/ass
 
 ## Replace the resume
 
-Put the new file at `site/assets/resume/Tanish_Shah_Resume.pdf`. The next page load picks it up. No code change and no restart.
+Put the new file at `site/assets/pdfs/Tanish_Shah_Resume.pdf`. The next page load picks it up. No code change and no restart.
 
 Static images live under `site/assets/images/`:
 

@@ -16,7 +16,7 @@ def resume_path(root: Path | None = None) -> Path:
     configured = os.environ.get("RESUME_PATH")
     if configured:
         return Path(configured)
-    return (root if root is not None else site_root()) / "assets" / "resume" / "Tanish_Shah_Resume.pdf"
+    return (root if root is not None else site_root()) / "assets" / "pdfs" / "Tanish_Shah_Resume.pdf"
 
 
 def projects_path(root: Path | None = None) -> Path:

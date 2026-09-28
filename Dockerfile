@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never \
     SITE_ROOT=/srv/site \
-    RESUME_PATH=/srv/site/assets/resume/Tanish_Shah_Resume.pdf
+    RESUME_PATH=/srv/site/assets/pdfs/Tanish_Shah_Resume.pdf
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends poppler-utils nginx ca-certificates \
