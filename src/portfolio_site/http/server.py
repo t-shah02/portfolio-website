@@ -14,11 +14,15 @@ from portfolio_site.http.reload import is_reload_child, run_reloader
 from portfolio_site.projects.cache import ProjectsCache
 from portfolio_site.http.render import render_page
 from portfolio_site.http.view import build_page
+from portfolio_site.weather import WeatherService, client_ip
+from portfolio_site.weather.service import WEATHER_TTL_S
 
 logger = logging.getLogger(__name__)
 
 _STATIC_PREFIXES = ("css/", "js/", "assets/")
 _HOST_RE = re.compile(r"\A[A-Za-z0-9.-]+(?::\d{1,5})?\Z")
+# The page embeds per-visitor weather, so only the visitor's browser may cache it.
+PAGE_CACHE_CONTROL = f"private, max-age={WEATHER_TTL_S}"
 
 
 def build_handler(
@@ -27,6 +31,7 @@ def build_handler(
     projects: ProjectsCache,
     about: AboutCache,
     *,
+    weather: WeatherService | None = None,
     dev: bool = False,
 ) -> type[BaseHTTPRequestHandler]:
     site = root.resolve()
@@ -50,11 +55,18 @@ def build_handler(
 
         def _send_html(self) -> None:
             page = build_page(cache.load(), projects.load(), about.load())
-            body = render_page(page, origin=request_origin(self.headers)).encode("utf-8")
+            sky = None
+            if weather is not None:
+                sky = weather.for_ip(client_ip(self.headers, self.client_address[0]))
+            body = render_page(
+                page,
+                origin=request_origin(self.headers),
+                sky=sky.as_json() if sky else None,
+            ).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
-            self.send_header("Cache-Control", "no-cache")
+            self.send_header("Cache-Control", "no-cache" if dev else PAGE_CACHE_CONTROL)
             self.end_headers()
             self.wfile.write(body)
 
@@ -123,7 +135,7 @@ def main() -> None:
     dev = args.reload or is_reload_child()
     httpd = ThreadingHTTPServer(
         (args.host, args.port),
-        build_handler(root, cache, projects, about, dev=dev),
+        build_handler(root, cache, projects, about, weather=WeatherService(), dev=dev),
     )
     logger.info("Serving %s on http://%s:%s", root, args.host, args.port)
     logger.info("Resume path: %s", pdf)

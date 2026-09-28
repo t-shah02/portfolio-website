@@ -49,10 +49,31 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/css/styles.css" />
+    <script type="application/json" id="sky-data">{{ sky | tojson }}</script>
     <script>
-      if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        document.documentElement.classList.add("motion");
-      }
+      (function () {
+        var root = document.documentElement;
+        if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          root.classList.add("motion");
+        }
+        var desktop = matchMedia("(hover: hover) and (pointer: fine)").matches && screen.width >= 1024;
+        var saveData = navigator.connection && navigator.connection.saveData;
+        if (!desktop || saveData || !window.HTMLCanvasElement) return;
+        root.classList.add("sky");
+        try {
+          var saved = JSON.parse(localStorage.getItem("sky-theme"));
+          if (saved && Date.now() - saved.at < 15 * 60 * 1000) {
+            for (var name in saved.vars) {
+              if (/^#[0-9a-f]{6}$/i.test(saved.vars[name])) root.style.setProperty("--" + name, saved.vars[name]);
+            }
+            root.style.colorScheme = saved.scheme === "dark" ? "dark" : "light";
+          }
+        } catch (error) {}
+        var script = document.createElement("script");
+        script.type = "module";
+        script.src = "/js/sky/main.js";
+        document.head.appendChild(script);
+      })();
     </script>
     <script src="/js/motion.js" defer></script>
     <script src="/js/projects.js" defer></script>

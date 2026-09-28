@@ -28,8 +28,8 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(900px 420px at 0% -10%, #f8f3ea 0%, transparent 55%),
-    radial-gradient(800px 380px at 100% 0%, #ead8c2 0%, transparent 50%),
+    radial-gradient(900px 420px at 0% -10%, color-mix(in srgb, var(--foam) 70%, var(--paper)) 0%, transparent 55%),
+    radial-gradient(800px 380px at 100% 0%, var(--paper-deep) 0%, transparent 50%),
     var(--paper);
   color: var(--ink);
   font-family: var(--sans);
@@ -57,8 +57,32 @@ a:hover {
 }
 
 ::selection {
-  background: #e8cbb4;
+  background: color-mix(in srgb, var(--terracotta) 28%, var(--paper));
   color: var(--ink);
+}
+
+.sky-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.sky-canvas.is-ready {
+  opacity: 1;
+}
+
+/* Text sitting straight on the sky keeps a soft paper halo, so it stays legible when the sun or moon passes behind it. */
+.sky .hero-copy,
+.sky .section > h2,
+.sky .also > h3 {
+  text-shadow:
+    0 0 0.35em var(--paper),
+    0 0 1.2em var(--paper);
 }
 
 .skip {
@@ -374,8 +398,8 @@ h3 {
 .notice {
   margin: 0 0 1rem;
   padding: 0.8rem 1rem;
-  background: #f6e4d4;
-  border: 1px solid #e2b89a;
+  background: color-mix(in srgb, var(--terracotta) 10%, var(--paper));
+  border: 1px solid color-mix(in srgb, var(--terracotta) 35%, var(--paper));
   border-radius: 0.8rem;
 }
 

@@ -67,6 +67,28 @@ Use a numeric prefix in the filename (`01-`, `02-`, …) or an `order:` field to
 
 The parser expects the headings `Technical Skills`, `Work Experience`, and `Education`, with each role’s dates in a right-hand column. The phone number in the header is never shown. GitHub and LinkedIn stay the published profile links.
 
+## Sky background
+
+On desktop (fine pointer, screen ≥ 1024 px, no Save-Data), a canvas behind the page paints a day/night cycle on the visitor's local clock: a latte for a sun, a croissant for a moon, stars, and the visitor's live weather. The page palette follows it, from the original cream by day through golden hour to a dark roast at night. Phones and tablets never download the sky scripts.
+
+- **Time**: the browser's local time and time zone. Day length comes from the visitor's approximate latitude and the date, and solar noon moves to 13:00 under daylight saving.
+- **Weather**: on each page render the server resolves the visitor's IP to a rough location with [GeoJS](https://www.geojs.io/), then reads current conditions from [Open-Meteo](https://open-meteo.com/). Neither needs an API key. `src/portfolio_site/weather/sky.py` turns WMO codes and precipitation rates into 0–1 cloud, rain, snow, fog and thunder levels, and the canvas scales particle counts from those. Locations are cached for a day per IP and weather for 10 minutes per ~11 km cell. A failing upstream is skipped for a minute, and the page renders a clear sky instead of waiting.
+- **Caching**: the page is sent with `Cache-Control: private, max-age=600`, so each browser reuses its own copy for 10 minutes and shared caches never serve one visitor's weather to another. Dev mode (`make run`) keeps `no-cache`.
+- **Scroll**: at the top of the page the sun and moon ride a full arc. Once you scroll into the sections they glide into the side margins beside the content, so they stay visible everywhere on the page.
+- **Reduced motion**: a still frame, redrawn once a minute, with no lightning.
+
+Preview any time or weather with query parameters (previews are not saved as the visitor's palette):
+
+```text
+/?sky-time=21:30                     local time to show
+/?sky-speed=600                      fast-forward (600 = ten minutes per second)
+/?sky-weather=storm                  clear, cloudy, overcast, drizzle, rain, storm, snow, blizzard, fog
+/?sky-weather=rain,cloud:0.4,wind:-1 a preset plus overrides (0–1, wind -1–1)
+/?sky-lat=64                         latitude for day length
+```
+
+Behind a proxy, forward the client address (`X-Forwarded-For` or `X-Real-IP`). The bundled nginx config already does. A loopback or private address falls back to the server's own location.
+
 ## Run locally
 
 Install [uv](https://docs.astral.sh/uv/). Poppler’s `pdftotext` is required (`poppler-utils` on Debian, `poppler` on Arch).
@@ -80,7 +102,7 @@ That runs the dev server with `--reload` (watches `site/` and `src/` and restart
 Other targets:
 
 ```bash
-make test        # unit tests
+make test        # Python and JS unit tests (JS needs Node 22+)
 make build       # docker image tanish-portfolio
 make run-build   # container on port 8080
 ```
