@@ -2,6 +2,7 @@ import argparse
 import logging
 import mimetypes
 import os
+import re
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote, urlparse
@@ -17,6 +18,7 @@ from portfolio_site.http.view import build_page
 logger = logging.getLogger(__name__)
 
 _STATIC_PREFIXES = ("css/", "js/", "assets/")
+_HOST_RE = re.compile(r"\A[A-Za-z0-9.-]+(?::\d{1,5})?\Z")
 
 
 def build_handler(
@@ -48,7 +50,7 @@ def build_handler(
 
         def _send_html(self) -> None:
             page = build_page(cache.load(), projects.load(), about.load())
-            body = render_page(page).encode("utf-8")
+            body = render_page(page, origin=request_origin(self.headers)).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(body)))
@@ -70,6 +72,15 @@ def build_handler(
             self.wfile.write(data)
 
     return Handler
+
+
+def request_origin(headers) -> str:
+    host = (headers.get("Host") or "").strip()
+    if _HOST_RE.fullmatch(host) is None:
+        return ""
+    forwarded = (headers.get("X-Forwarded-Proto") or "http").split(",")[0].strip().lower()
+    proto = forwarded if forwarded in ("http", "https") else "http"
+    return f"{proto}://{host}"
 
 
 def _static_file(root: Path, url_path: str) -> Path | None:

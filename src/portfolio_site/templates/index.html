@@ -24,6 +24,24 @@
       name="description"
       content="{{ page.intro_plain }}"
     />
+    <meta property="og:title" content="{{ page.name }}" />
+    <meta
+      property="og:description"
+      content="Junior software developer in Calgary. I build full-stack apps, internal tools, and AI experiments."
+    />
+    <meta property="og:type" content="website" />
+    {% if origin %}
+    <meta property="og:url" content="{{ origin }}/" />
+    {% endif %}
+    <meta property="og:image" content="{{ origin }}/assets/images/profile/tanish-tokyo.jpg" />
+    <meta
+      property="og:image:alt"
+      content="{{ page.name }} standing in front of a window over the Tokyo skyline"
+    />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="779" />
+    <meta property="og:image:height" content="1039" />
+    <meta name="twitter:card" content="summary" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

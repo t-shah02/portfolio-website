@@ -4,26 +4,31 @@ from datetime import datetime
 from pathlib import Path
 
 from portfolio_site.projects.cache import ProjectsCache, ProjectsProblem
-from portfolio_site.projects.parse import ProjectsFormatError, load_projects_dir, parse_feature_file
-
-PROJECTS = (
-    Path(__file__).resolve().parents[1]
-    / "site"
-    / "assets"
-    / "projects"
+from portfolio_site.projects.parse import (
+    ProjectsFormatError,
+    load_projects_dir,
+    parse_feature_file,
 )
+
+PROJECTS = Path(__file__).resolve().parents[1] / "site" / "assets" / "projects"
 
 
 class LoadProjectsTest(unittest.TestCase):
     def test_loads_feature_and_other_markdown(self) -> None:
         bundle = load_projects_dir(PROJECTS)
-        self.assertEqual([feature.title for feature in bundle.features], ["Dexbooru", "Amazon reviews sentiment"])
+        self.assertEqual(
+            [feature.title for feature in bundle.features],
+            ["Dexbooru", "Amazon reviews sentiment"],
+        )
         dexbooru = bundle.features[0]
-        self.assertEqual(dexbooru.links[0].name, "dexbooru-web")
+        self.assertEqual(dexbooru.links[0].name, "Web application")
         self.assertIsNotNone(dexbooru.details)
         assert dexbooru.details is not None
         self.assertEqual(len(dexbooru.details.images), 3)
-        self.assertEqual(dexbooru.details.images[2].src, "/assets/images/projects/dexbooru/screens/post-detail.webp")
+        self.assertEqual(
+            dexbooru.details.images[2].src,
+            "/assets/images/projects/dexbooru/screens/post-detail.webp",
+        )
         self.assertIn("dexbooru.neetbyte.fun", dexbooru.details.body_html)
         self.assertEqual(bundle.other_projects[0].name, "Quotify AI")
         self.assertIn("Stable Diffusion", bundle.other_projects[0].stack)
@@ -70,7 +75,9 @@ class ProjectsCacheTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "other").mkdir()
-            (root / "other" / "broken.md").write_text("---\nname: X\n---\n", encoding="utf-8")
+            (root / "other" / "broken.md").write_text(
+                "---\nname: X\n---\n", encoding="utf-8"
+            )
             result = ProjectsCache(root).load()
             self.assertIsInstance(result, ProjectsProblem)
 

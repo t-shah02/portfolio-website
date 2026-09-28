@@ -101,6 +101,21 @@ class PageTest(unittest.TestCase):
         self.assertIn("project-dexbooru", html)
         self.assertIn("/assets/images/projects/dexbooru/screens/posts.webp", html)
         self.assertIn("/assets/images/profile/tanish-tokyo.jpg", html)
+        self.assertIn('property="og:title" content="Tanish Shah"', html)
+        self.assertIn(
+            "Junior software developer in Calgary. I build full-stack apps, internal tools, and AI experiments.",
+            html,
+        )
+        self.assertIn(
+            'property="og:image" content="/assets/images/profile/tanish-tokyo.jpg"',
+            html,
+        )
+        shared = render_page(page, origin="https://tanish.example")
+        self.assertIn(
+            'property="og:image" content="https://tanish.example/assets/images/profile/tanish-tokyo.jpg"',
+            shared,
+        )
+        self.assertIn('property="og:url" content="https://tanish.example/"', shared)
         self.assertIn("/assets/images/orgs/work/neo-financial.webp", html)
         self.assertIn("/assets/images/orgs/education/simon-fraser-university.webp", html)
 
